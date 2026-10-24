@@ -1,0 +1,32 @@
+name: Decode logo PNG
+on:
+  push:
+    paths:
+      - 'img/logo-policia-chaves.png.b64'
+      - '.github/workflows/decode-logo.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  decode:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Decode PNG from base64
+        run: |
+          set -e
+          base64 -d img/logo-policia-chaves.png.b64 > img/logo-policia-chaves.png
+          ls -la img/logo-policia-chaves.png
+          file img/logo-policia-chaves.png
+      - name: Commit PNG if changed
+        run: |
+          set -e
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add img/logo-policia-chaves.png
+          if git diff --staged --quiet; then
+            echo "No PNG changes"
+          else
+            git commit -m "Add logo-policia-chaves.png (from attachment)"
+            git push
+          fi
